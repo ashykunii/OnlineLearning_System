@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Employee Profile Info Showcase Banner -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 profile-banner profile-banner--employee">
+        <h3 class="mb-0 text-white">{{ user.get_full_name|default:user.username }}</h3>
+        <p class="mb-1 opacity-75">Administrative Operations &bull; Department: <strong>{{ employee.department|default:"Operations" }}</strong></p>
+        <p class="mb-0 small opacity-75">Email: {{ user.email|default:"No email registered" }} &bull; System Role: Administrator</p>
+    </div>
+</div>
+
+<div class="row text-center my-4">
+    <div class="col-md-3">
+        <div class="p-3 bg-success rounded mb-3 mb-md-0">
+            <h5 class="text-white">Students</h5>
+            <h3 class="text-white mb-0">{{ total_students }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="p-3 bg-success rounded mb-3 mb-md-0">
+            <h5 class="text-white">Instructors</h5>
+            <h3 class="text-white mb-0">{{ total_instructors }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="p-3 bg-success rounded mb-3 mb-md-0">
+            <h5 class="text-white">Courses</h5>
+            <h3 class="text-white mb-0">{{ total_courses }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="p-3 bg-success rounded">
+            <h5 class="text-white">Enrollments</h5>
+            <h3 class="text-white mb-0">{{ total_enrollments }}</h3>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <h4 class="mb-3">Course Governance</h4>
+        <table class="table bg-white border">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Instructor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in all_courses %}
+                <tr>
+                    <td>{{ c.title }}</td>
+                    <td>{{ c.instructor.user.username }}</td>
+                    <td>{% if c.is_published %}Active{% else %}Hidden{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h4 class="mb-3">User Generated Reviews</h4>
+        {% for r in all_reviews %}
+        <div class="p-2 mb-2 bg-white border rounded">
+            <strong>{{ r.course.title }}</strong> - Rated: {{ r.rating }}/5<br>
+            <small class="text-muted">By {{ r.student.user.username }}: "{{ r.comment }}"</small>
+        </div>
+        {% empty %}
+        <p class="text-muted small">No reviews yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{%if user.is_superuser%}
+<div class="text-center p-3 mt-3">
+    <a href="/admin/" class="btn btn-primary">Go to Django Admin</a>
+</div>
+{% endif %}
+{% endblock %}

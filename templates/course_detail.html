@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- ── Hero Section ── -->
+<div class="mb-0">
+    <div class="p-4 p-md-5 rounded-top-3" style="background: linear-gradient(135deg, #0b3d26 0%, #1a6641 100%);">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="badge bg-light text-success fw-bold mb-2">{{ course.category.name }}</span>
+                <h1 class="text-white fw-bold mb-2" style="font-size: 1.8rem;">{{ course.title }}</h1>
+                <p class="text-white-50 mb-3 lead" style="font-size: 1rem;">{{ course.description }}</p>
+                <p class="text-white-50 small mb-0">Instructor: <strong class="text-white">{{ course.instructor.user.get_full_name|default:course.instructor.user.username }}</strong></p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" class="img-fluid rounded-3 shadow" style="max-height: 160px; object-fit: cover;" alt="{{ course.title }}">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="card border-0 rounded-0 shadow-sm">
+        <div class="card-body py-3">
+            <div class="row g-0 text-center divide-x">
+                <div class="col-6 col-md-3 py-2 border-end">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#198754" viewBox="0 0 16 16">
+                            <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                            <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3z"/>
+                        </svg>
+                        <div class="text-start">
+                            <div class="fw-bold text-dark">{{ lesson_count }} Lesson{{ lesson_count|pluralize }}</div>
+                            <div class="text-muted" style="font-size:0.75rem;">Structured modules</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 py-2 border-end">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#f59e0b" viewBox="0 0 16 16">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                        </svg>
+                        <div class="text-start">
+                            {% if avg_rating %}
+                                <div class="fw-bold text-dark">{{ avg_rating }} / 5.0</div>
+                                <div class="text-muted" style="font-size:0.75rem;">{{ review_count }} review{{ review_count|pluralize }}</div>
+                            {% else %}
+                                <div class="fw-bold text-dark">No ratings</div>
+                                <div class="text-muted" style="font-size:0.75rem;">Be the first to review</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 py-2 border-end">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#6366f1" viewBox="0 0 16 16">
+                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                            <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                        </svg>
+                        <div class="text-start">
+                            <div class="fw-bold text-dark">{{ enrolled_count }} Enrolled</div>
+                            <div class="text-muted" style="font-size:0.75rem;">Active learners</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 py-2">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#10b981" viewBox="0 0 16 16">
+                            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                        </svg>
+                        <div class="text-start">
+                            <div class="fw-bold text-dark">Self-paced</div>
+                            <div class="text-muted" style="font-size:0.75rem;">Learn on your schedule</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Access / Enrollment Card ── -->
+<div class="row mt-4">
+    <div class="col-lg-8">
+
+        {% if is_enrolled and is_paid %}
+        <!-- UNLOCKED STATE -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+            <div class="card-body p-4" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-success text-white" style="width: 52px; height: 52px; flex-shrink:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-success mb-0">Full Access Granted</h5>
+                        <p class="text-success mb-0 small">You have unlocked all lessons, assignments, and course materials.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% elif is_enrolled and not is_paid %}
+        <!-- LOCKED / PAYMENT NEEDED STATE -->
+        <div class="card border-warning border-2 shadow-sm mb-4 overflow-hidden">
+            <div class="card-body p-4" style="background: linear-gradient(135deg, #fef9c3, #fde68a);">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-warning text-white" style="width: 52px; height: 52px; flex-shrink:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold text-warning-emphasis mb-1">Course Locked — Payment Required</h5>
+                        <p class="text-dark mb-3 small">You are enrolled but have not yet paid to unlock course content. Complete payment to access all lessons and assignments.</p>
+                        <a href="{% url 'course_payment' enrollment_id %}" class="btn btn-warning fw-bold px-4">
+                            Unlock for ${{ course.price }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% elif user.role == 'student' %}
+        <!-- NOT ENROLLED STATE -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+                    <div>
+                        <h5 class="fw-bold mb-1">Ready to start learning?</h5>
+                        <p class="text-muted mb-0 small">Enroll to access this course track for <strong class="text-success">${{ course.price }}</strong>.</p>
+                    </div>
+                    <form action="{% url 'enroll_course' course.id %}" method="post" class="m-0">
+                        {% csrf_token %}
+                        <button class="btn btn-success btn-lg px-4 fw-bold">Enroll Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ── Lessons Syllabus ── -->
+        <h4 class="fw-bold mb-3">
+            Course Syllabus
+            {% if user == course.instructor.user %}
+            <a href="{% url 'lesson_create' course.id %}" class="btn btn-sm btn-success float-end">+ Add Lesson</a>
+            {% endif %}
+        </h4>
+
+        <!-- Lesson Search -->
+        <div class="input-group mb-3 shadow-sm border rounded overflow-hidden">
+            <span class="input-group-text bg-white border-0 text-muted">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                </svg>
+            </span>
+            <input type="text" id="lessonSearchInput" class="form-control border-0 ps-1 text-dark" placeholder="Search lessons…">
+        </div>
+
+        <div class="list-group shadow-sm mb-4" id="lessonList">
+            {% for lesson in lessons %}
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center lesson-list-item py-3"
+                 data-lesson-title="{{ lesson.title }}" data-lesson-desc="{{ lesson.description }}">
+                <div class="d-flex align-items-center gap-3 flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold"
+                         style="width:30px; height:30px; flex-shrink:0; font-size:0.8rem;
+                         background: {% if user.role == 'student' and is_enrolled and not is_paid %}#d1d5db{% else %}#198754{% endif %};">
+                        {{ lesson.order }}
+                    </div>
+                    {% if user.role == 'student' and is_enrolled and not is_paid %}
+                    <span class="text-muted">{{ lesson.title }}</span>
+                    {% else %}
+                    <a href="{% url 'lesson_detail' lesson.id %}" class="text-decoration-none text-dark fw-semibold">{{ lesson.title }}</a>
+                    {% endif %}
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    {% if user == course.instructor.user %}
+                    <a href="{% url 'lesson_update' lesson.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    {% endif %}
+                    {% if is_enrolled %}
+                        {% if is_paid %}<span class="badge bg-success">Unlocked</span>
+                        {% else %}<span class="badge bg-warning text-dark"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg> Locked</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge bg-secondary">Preview</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="list-group-item text-center text-muted py-4">No lessons published yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ── Sidebar: Reviews ── -->
+    <div class="col-lg-4">
+        {% if is_enrolled %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header fw-bold bg-transparent border-bottom text-dark">Leave a Review</div>
+            <div class="card-body">
+                <form action="{% url 'submit_review' course.id %}" method="post">
+                    {% csrf_token %}
+                    <label class="form-label small fw-bold text-muted">RATING (1–5)</label>
+                    <input type="number" name="rating" min="1" max="5" class="form-control mb-3" required placeholder="e.g. 4">
+                    <label class="form-label small fw-bold text-muted">COMMENT</label>
+                    <textarea name="comment" class="form-control mb-3" rows="3" placeholder="Your feedback…"></textarea>
+                    <button type="submit" class="btn btn-dark btn-sm w-100">Submit Review</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header fw-bold bg-transparent border-bottom text-dark">Student Reviews</div>
+            <div class="card-body p-2">
+                {% for r in reviews %}
+                <div class="p-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="text-warning fw-bold">{% for i in "12345"|make_list %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                        <span class="text-muted small">{{ r.rating }}/5</span>
+                    </div>
+                    <p class="mb-0 small text-muted">"{{ r.comment }}"</p>
+                </div>
+                {% empty %}
+                <p class="text-muted small text-center py-3 mb-0">No approved reviews yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('lessonSearchInput');
+    if (input) {
+        input.addEventListener('input', e => {
+            const q = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.lesson-list-item').forEach(item => {
+                const t = (item.dataset.lessonTitle || '').toLowerCase();
+                const d = (item.dataset.lessonDesc || '').toLowerCase();
+                item.style.display = (t.includes(q) || d.includes(q)) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

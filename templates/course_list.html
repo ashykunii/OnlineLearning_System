@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if user.is_authenticated %}
+<!-- Authenticated Banner -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 profile-banner text-center text-white">
+        <h3 class="mb-0 fw-bold text-white">Academic Catalog Discovery</h3>
+        <p class="text-white-50 mb-0 mt-1">Explore our advanced structural curricula and master new domains.</p>
+    </div>
+</div>
+{% else %}
+<!-- Unauthenticated Banner -->
+<div class="card shadow-sm mb-4 p-4 overflow-hidden position-relative" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=900&auto=format&fit=crop&q=60'); background-size: cover; color: white; height: 320px; background-position: center; border: none; border-radius: 12px;">
+    <div class="d-flex flex-column justify-content-center h-100 text-center">
+        <h2 class="text-white fw-bold mb-2">Discover the Best Courses</h2>
+        <p class="text-white-50 mb-4 max-w-xl mx-auto">Welcome to the programmatic online learning portal. Log in to enroll in course tracks, solve exercises, and earn verifiable feedback from qualified experts.</p>
+        <div>
+            <a href="{% url 'login' %}" class="btn btn-success btn-lg px-4 shadow">Get Started Now</a>
+        </div>
+    </div>
+</div>  
+{% endif %}
+
+<div class="row">
+    <!-- Filter Sidebar Column -->
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-3">
+                <h5 class="fw-bold mb-3 text-dark">Catalog Filter</h5>
+                
+                <!-- Category Filter -->
+                <h6 class="text-muted small fw-bold mb-2">CATEGORIES</h6>
+                <div class="list-group mb-3 border rounded shadow-sm">
+                    <a href="{% url 'course_list' %}" class="list-group-item list-group-item-action py-2 {% if not selected_category %}active bg-success text-white{% endif %}">
+                        All Categories
+                    </a>
+                    {% for cat in categories %}
+                    <a href="?category={{ cat.id }}" class="list-group-item list-group-item-action py-2 {% if selected_category == cat.id %}active bg-success text-white{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <!-- Instructor Filter -->
+                <h6 class="text-muted small fw-bold mt-4 mb-2">INSTRUCTORS</h6>
+                <div class="list-group mb-3 border rounded shadow-sm">
+                    <a href="{% url 'course_list' %}" class="list-group-item list-group-item-action py-2 {% if not selected_instructor %}active bg-success text-white{% endif %}">
+                        All Instructors
+                    </a>
+                    <!-- fixed error in filter for instructor -->
+                    {% for instr in instructors %}
+                    <a href="?instructor={{ instr.user_id }}" class="list-group-item list-group-item-action py-2 {% if selected_instructor == instr.user_id %}active bg-success text-white{% endif %}">
+                        {{ instr.user.username }}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <!-- Tags Filter -->
+                <h6 class="text-muted small fw-bold mt-4 mb-2">TAGS</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    {% for t in tags %}
+                    <a href="?tag={{ t.id }}" class="badge {% if selected_tag == t.id %}bg-success{% else %}bg-secondary{% endif %} text-decoration-none px-2 py-1 small">
+                        #{{ t.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catalog Courses List Column -->
+    <div class="col-md-9">
+        <!-- Search bar Form -->
+        <form method="get" action="{% url 'course_list' %}" class="mb-4">
+            <div class="input-group shadow-sm border rounded overflow-hidden">
+                <span class="input-group-text bg-white border-0 text-muted">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </span>
+                <input type="text" name="q" class="form-control border-0 ps-2 text-dark" placeholder="Search courses by title or description..." value="{{ q }}">
+                <button type="submit" class="btn btn-success px-4 fw-semibold border-0">Search</button>
+            </div>
+            {% if request.GET.category or request.GET.tag or request.GET.instructor or q %}
+                <div class="mt-2">
+                    <a href="{% url 'course_list' %}" class="btn btn-sm btn-outline-danger py-1 px-3 rounded-pill">Reset Active Filters</a>
+                </div>
+            {% endif %}
+        </form>
+
+        <!-- Catalog Courses Grid -->
+        <div class="row">
+            {% for course in courses %}
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow-sm h-100 border-0 overflow-hidden card-hover" style="transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                    <div class="card-body d-flex flex-column p-4">
+                        <div class="mb-2">
+                            <span class="badge bg-light text-success border border-success-subtle px-2 py-1 small fw-bold">{{ course.category.name }}</span>
+                        </div>
+                        <h5 class="card-title text-dark fw-bold mb-1">{{ course.title }}</h5>
+                        <p class="text-muted small mb-3">By <strong>{{ course.instructor.user.username }}</strong></p>
+                        <p class="card-text text-muted small flex-grow-1">
+                            {{ course.description }}
+                        </p>
+                        <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                            <span class="badge" style="background:#dcfce7;color:#15803d;">${{ course.price }}</span>
+                            <a href="{% url 'course_detail' course.id %}" class="btn btn-sm btn-success">View Blueprint</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="text-muted mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-journal-x" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M6.108 5.436a.5.5 0 0 0-.545-.089l-1.5 1a.5.5 0 1 0 .555.83l1.5-1a.5.5 0 0 0-.01-.741"/>
+                      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                      <path d="M8 14V1H7v13zM3 5h4V4H3zm0 3h4V7H3zm0 3h4v-1H3zm10-5.879L12.121 5 11 6.121 10.121 5.25l-.879.879 1.122 1.12-1.122 1.122.879.879L11.25 8.12 12.38 9.25l.878-.879-1.12-1.12 1.12-1.122z"/>
+                    </svg>
+                </div>
+                <h5 class="text-dark fw-bold">No courses matched your query</h5>
+                <p class="text-muted small">Try adjusting your filters or resetting them to see all offerings.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,106 @@
+<!-- Collapsible Sidebar - Employee -->
+<div class="sidebar sidebar--employee d-flex flex-column text-white" id="employeeSidebar">
+    <div class="sidebar-brand d-flex align-items-center justify-content-between p-3">
+        <a href="{% url 'employee_dashboard' %}" class="text-white text-decoration-none sidebar-brand-text fw-bold fs-6">Admin Matrix</a>
+        <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+            </svg>
+        </button>
+    </div>
+    <hr class="border-white border-opacity-25 mx-3 mt-0">
+    <ul class="nav flex-column mb-auto gap-1 px-2">
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_dashboard' %}" class="sidebar-link {% if '/dashboard/employee/' in request.path %}active{% endif %}" title="Dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M14 9q-.425 0-.712-.288T13 8V4q0-.425.288-.712T14 3h6q.425 0 .713.288T21 4v4q0 .425-.288.713T20 9zM4 13q-.425 0-.712-.288T3 12V4q0-.425.288-.712T4 3h6q.425 0 .713.288T11 4v8q0 .425-.288.713T10 13zm10 8q-.425 0-.712-.288T13 20v-8q0-.425.288-.712T14 11h6q.425 0 .713.288T21 12v8q0 .425-.288.713T20 21zM4 21q-.425 0-.712-.288T3 20v-4q0-.425.288-.712T4 15h6q.425 0 .713.288T11 16v4q0 .425-.288.713T10 21z" />
+                </svg>                
+                <span class="sidebar-label">Dashboard</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'course_list' %}" class="sidebar-link {% if request.path == '/courses/' %}active{% endif %}" title="Catalog">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6 22q-.825 0-1.412-.587T4 20V4q0-.825.588-1.412T6 2h12q.825 0 1.413.588T20 4v16q0 .825-.587 1.413T18 22zm5-18v6.125q0 .3.238.438t.512-.013l1.225-.725q.25-.15.513-.15t.512.15l1.225.725q.275.15.525.013t.25-.438V4z" />
+                </svg>
+                <span class="sidebar-label">Course Catalog</span>
+            </a>
+        </li>
+
+        <li class="sidebar-nav-item mt-2">
+            <span class="sidebar-section-label text-uppercase fw-bold small text-white-50 px-2">Manage Models</span>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_model_list' 'student' %}" class="sidebar-link {% if '/student/' in request.path %}active{% endif %}" title="Students">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/><path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+                <span class="sidebar-label">Students</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_model_list' 'instructor' %}" class="sidebar-link {% if '/instructor/' in request.path %}active{% endif %}" title="Instructors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg>
+                <span class="sidebar-label">Instructors</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_model_list' 'course' %}" class="sidebar-link {% if '/course/' in request.path %}active{% endif %}" title="Courses">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/></svg>
+                <span class="sidebar-label">Courses</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_model_list' 'category' %}" class="sidebar-link {% if '/category/' in request.path %}active{% endif %}" title="Categories">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"viewBox="0 0 24 24"><path d="M7.425 9.475L11.15 3.4q.15-.25.375-.363T12 2.925t.475.113t.375.362l3.725 6.075q.15.25.15.525t-.125.5t-.35.363t-.525.137h-7.45q-.3 0-.525-.137T7.4 10.5t-.125-.5t.15-.525M17.5 22q-1.875 0-3.187-1.312T13 17.5t1.313-3.187T17.5 13t3.188 1.313T22 17.5t-1.312 3.188T17.5 22M3 20.5v-6q0-.425.288-.712T4 13.5h6q.425 0 .713.288T11 14.5v6q0 .425-.288.713T10 21.5H4q-.425 0-.712-.288T3 20.5" />
+                </svg>
+                <span class="sidebar-label">Categories</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_model_list' 'tag' %}" class="sidebar-link {% if '/tag/' in request.path %}active{% endif %}" title="Tags">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/></svg>
+                <span class="sidebar-label">Tags</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_model_list' 'enrollment' %}" class="sidebar-link {% if '/enrollment/' in request.path %}active{% endif %}" title="Enrollments">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+                <span class="sidebar-label">Enrollments</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'employee_model_list' 'review' %}" class="sidebar-link {% if '/review/' in request.path %}active{% endif %}" title="Reviews">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M7 14h1.65q.2 0 .388-.075t.337-.225L14.05 9q.225-.225.338-.513t.112-.562t-.112-.537t-.313-.488l-.925-.95q-.225-.225-.5-.337t-.575-.113q-.275 0-.55.113t-.5.337L6.3 10.625q-.15.15-.225.338T6 11.35V13q0 .425.288.713T7 14m5.05-5.1l-.95-.925l.975-.975l.925.95zM11.2 14H17q.425 0 .713-.288T18 13t-.288-.712T17 12h-3.8zM6 18l-2.3 2.3q-.475.475-1.088.213T2 19.575V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18z" />
+                </svg>                
+                <span class="sidebar-label">Reviews</span>
+            </a>
+        </li>
+    </ul>
+    <hr class="border-white border-opacity-25 mx-3">
+    <ul class="nav flex-column gap-1 px-2 mb-2">
+        <li class="sidebar-nav-item">
+            <a href="{% url 'profile' %}" class="sidebar-link {% if request.path == '/profile/' %}active{% endif %}" title="Profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg>
+                <span class="sidebar-label">Profile</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
+            <a href="{% url 'settings' %}" class="sidebar-link {% if request.path == '/settings/' %}active{% endif %}" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.892 3.433-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.892-1.64-.901-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.474l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/><path d="M8 5.754a2.246 2.246 0 1 0 0 4.492 2.246 2.246 0 0 0 0-4.492z"/></svg>
+                <span class="sidebar-label">Settings</span>
+            </a>
+        </li>
+    </ul>
+    <hr class="border-white border-opacity-25 mx-3 mt-0">
+    <div class="dropdown px-3 pb-3">
+        <a href="#" class="d-flex align-items-center gap-2 text-white text-decoration-none dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="sidebar-avatar sidebar-avatar--employee">{{ user.username|slice:":1"|upper }}</div>
+            <strong class="sidebar-label sidebar-username">{{ user.username }}</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark shadow" aria-labelledby="dropdownUser3">
+            <li><div class="px-3 py-2 text-muted small">Signed in as:<br><strong class="text-white">{{ user.email|default:user.username }}</strong></div></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><form action="{% url 'logout' %}" method="post" class="m-0">{% csrf_token %}<button type="submit" class="dropdown-item text-danger">Logout</button></form></li>
+        </ul>
+    </div>
+</div>

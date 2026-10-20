@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 overflow-hidden mt-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-light text-primary rounded-circle mb-3" style="width: 70px; height: 70px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                          <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm3 0a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold">Acquire Course Matrix</h3>
+                    <p class="text-muted small">Unlock full programmatic access to high-tier learning resources.</p>
+                </div>
+
+                <div class="p-3 mb-4 bg-light rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small d-block">COURSE TRACK</span>
+                            <span class="fw-bold text-dark">{{ course.title }}</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">TOTAL PRICE</span>
+                            <span class="fs-4 fw-extrabold text-success ">${{ course.price }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" action="{% url 'course_payment' enrollment.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted mb-1">CARDHOLDER NAME</label>
+                        <input type="text" class="form-control" placeholder="e.g. John Doe" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted mb-1">CARD NUMBER</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control font-monospace" placeholder="•••• •••• •••• ••••" required max-length="19">
+                            <span class="input-group-text bg-white border-start-0 text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+                                  <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-7">
+                            <label class="form-label small fw-bold text-muted mb-1">EXPIRATION DATE</label>
+                            <input type="text" class="form-control text-center font-monospace" placeholder="MM / YY" required>
+                        </div>
+                        <div class="col-5">
+                            <label class="form-label small fw-bold text-muted mb-1">CVV / CVC</label>
+                            <input type="password" class="form-control text-center font-monospace" placeholder="•••" required max-length="4">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg w-100 mb-3 py-2 shadow-sm d-flex justify-content-center align-items-center gap-2">
+                        <span>Process Secure Payment</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                          <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+                        </svg>
+                    </button>
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary btn-sm w-100">Cancel & Return</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

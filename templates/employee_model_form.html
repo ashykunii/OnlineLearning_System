@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+
+        <!-- Breadcrumb -->
+        <div class="text-muted small mb-3">
+            <a href="{% url 'employee_dashboard' %}" class="text-muted text-decoration-none hover-dark">Dashboard</a>
+            &rsaquo;
+            <a href="{% url 'employee_model_list' model_name %}" class="text-muted text-decoration-none hover-dark">{{ model_name|capfirst }}s</a>
+            &rsaquo; {{ action }}
+        </div>
+
+        <div class="card shadow-lg border-0 overflow-hidden">
+            <div class="card-header p-4 text-center text-white" style="background: linear-gradient(135deg, #0b3d26, #145c3b); border: none;">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-20 rounded-circle mb-2" style="width: 54px; height: 54px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="dark" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                    </svg>
+                </div>
+                <h3 class="mb-0 fw-bold text-light">{{ action }} {{ model_name|capfirst }}</h3>
+                <p class="text-white-50 small mb-0">Fill in the specifications for administrative data tracking.</p>
+            </div>
+            <div class="card-body p-4 p-md-5 premium-form">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-4">
+                        {% for error in form.non_field_errors %}
+                        <div class="small fw-semibold">⚠ {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if model_name == 'review' and action == 'Update' %}
+                    <div class="mb-4 p-4 rounded border border-warning-subtle" style="background-color: #fffaf0;">
+                        <h5 class="fw-bold mb-3 text-warning-emphasis">Review Content Details</h5>
+                        <div class="mb-2"><strong>Course Track:</strong> <span class="text-dark">{{ form.instance.course.title }}</span></div>
+                        <div class="mb-2"><strong>Student Username:</strong> <span class="text-dark">{{ form.instance.student.user.username }}</span></div>
+                        <div class="mb-2"><strong>Rating Score:</strong> <span class="text-success fw-bold">{{ form.instance.rating }}</span> / 5</div>
+                        <div class="mb-0"><strong>Commentary:</strong> <em class="text-muted">"{{ form.instance.comment }}"</em></div>
+                    </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-bold text-muted small d-block mb-1">
+                            {{ field.label|upper }}
+                            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text text-muted small">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">⚠ {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="mt-4 pt-3 border-top d-flex gap-2">
+                        <button type="submit" class="btn btn-success btn-lg flex-grow-1 fw-bold">
+                            {% if action == 'Create' %}Create Record{% else %}Save Changes{% endif %}
+                        </button>
+                        <a href="{% url 'employee_model_list' model_name %}" class="btn btn-outline-secondary btn-lg px-4">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

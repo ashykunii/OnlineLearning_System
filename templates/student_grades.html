@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="mb-1">My Grades & Feedback</h2>
+        <p class="text-muted mb-0">All assignment results across your enrolled courses</p>
+      </div>
+      <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">&larr; Dashboard</a>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-4">
+        <div class="card border-0 shadow-sm card-stat py-3">
+          <div class="display-5 fw-bold text-primary">{{ total_graded|add:total_pending }}</div>
+          <div class="text-muted">Total Submissions</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card border-0 shadow-sm card-stat py-3">
+          <div class="display-5 fw-bold text-success">{{ total_graded }}</div>
+          <div class="text-muted">Graded</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card border-0 shadow-sm card-stat py-3">
+          <div class="display-5 fw-bold text-warning">{{ total_pending }}</div>
+          <div class="text-muted">Awaiting Grade</div>
+        </div>
+      </div>
+    </div>
+
+    {% if courses_data %}
+      {% for item in courses_data %}
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-light">{{ item.course.title }}</h5>
+          <a href="{% url 'course_detail' item.course.id %}" class="btn btn-sm btn-outline-light">View Course</a>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0 align-middle">
+            <thead>
+              <tr>
+                <th class="ps-3">Assignment</th>
+                <th>Lesson</th>
+                <th>Submitted</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Feedback</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sub in item.submissions %}
+              <tr>
+                <td class="ps-3">
+                  <a href="{% url 'assignment_detail' sub.assignment.id %}" class="fw-semibold text-decoration-none">
+                    {{ sub.assignment.title }}
+                  </a>
+                </td>
+                <td class="text-muted small">{{ sub.assignment.lesson.title }}</td>
+                <td class="text-muted small">{{ sub.submitted_at|date:"M j, Y" }}</td>
+                <td>
+                  {% if sub.score is not None %}
+                    <span class="fw-bold text-success">{{ sub.score }} / {{ sub.assignment.max_score }}</span>
+                    <div class="progress mt-1 progress-mini">
+                      <div class="progress-bar bg-success" style="width: {% widthratio sub.score sub.assignment.max_score 100 %}%;"></div>
+                    </div>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if sub.score is not None %}
+                    <span class="badge bg-success">Graded</span>
+                  {% else %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                  {% endif %}
+                </td>
+                <td class="small text-muted">
+                  {% if sub.feedback %}
+                    {{ sub.feedback|truncatechars:60 }}
+                  {% elif sub.score is not None %}
+                    <em>No feedback provided.</em>
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center py-5 text-muted">
+        <div class="empty-icon">📝</div>
+        <p class="fs-5 mt-2">You haven't submitted any assignments yet.</p>
+        <a href="{% url 'course_list' %}" class="btn btn-primary mt-2">Browse Courses</a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% block extra_css %}
+<!-- Emojis removed and inline styles replaced with classes -->
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+
+  <!-- Profile Card -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm h-100 card-xl">
+      <!-- Banner -->
+      <div class="p-4 text-center {% if role == 'student' %}profile-banner{% elif role == 'instructor' %}profile-banner--instructor{% else %}profile-banner--employee{% endif %}">
+        <h4 class="mb-0 fw-bold text-white mt-3">{{ user.get_full_name|default:user.username }}</h4>
+        <span class="badge bg-light text-dark mt-2">{{ role|capfirst }}</span>
+      </div>
+      <!-- Info -->
+      <div class="card-body p-4">
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Username</span>
+            <strong>{{ user.username }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Email</span>
+            <strong>{{ user.email|default:"—" }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Member since</span>
+            <strong>{{ user.date_joined|date:"M d, Y" }}</strong>
+          </li>
+          {% if role == 'student' and profile.bio %}
+          <li class="list-group-item px-0">
+            <span class="text-muted d-block mb-1">Bio</span>
+            <span>{{ profile.bio }}</span>
+          </li>
+          {% elif role == 'instructor' and profile.specialty %}
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Specialty</span>
+            <span class="badge badge-specialty">{{ profile.specialty }}</span>
+          </li>
+          {% elif role == 'employee' and profile.department %}
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Department</span>
+            <span>{{ profile.department }}</span>
+          </li>
+          {% endif %}
+        </ul>
+        <!-- Stats pills -->
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          {% if role == 'student' %}
+            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2">
+              {{ enrollments.count }} Courses
+            </span>
+            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
+              {{ graded_count }} Graded
+            </span>
+            <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2">
+              {{ pending_count }} Pending
+            </span>
+          {% elif role == 'instructor' %}
+            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2">
+              {{ courses_count }} Courses
+            </span>
+            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
+              {{ students_count }} Students
+            </span>
+          {% elif role == 'employee' %}
+            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
+              {{ total_students }} Students
+            </span>
+            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2">
+              {{ total_courses }} Courses
+            </span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm h-100 card-xl">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-4">Edit Profile</h5>
+        <form method="post" action="{% url 'profile' %}">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small text-dark">First Name</label>
+              <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold small text-dark">Last Name</label>
+              <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-dark">Email Address</label>
+              <input type="email" name="email" value="{{ user.email }}" class="form-control">
+            </div>
+            {% if role == 'student' %}
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-dark">Biography</label>
+              <textarea name="bio" rows="4" class="form-control" placeholder="Tell us about yourself...">{{ profile.bio }}</textarea>
+            </div>
+            {% elif role == 'instructor' %}
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-dark">Specialty / Expertise</label>
+              <input type="text" name="specialty" value="{{ profile.specialty }}" class="form-control" placeholder="e.g. Web Development, Data Science...">
+            </div>
+            {% elif role == 'employee' %}
+            <div class="col-12">
+              <label class="form-label fw-semibold small text-dark">Department</label>
+              <input type="text" name="department" value="{{ profile.department }}" class="form-control" placeholder="e.g. Engineering, Operations...">
+            </div>
+            {% endif %}
+            <div class="col-12">
+              <button type="submit" class="btn btn-success px-4 py-2">Save Changes</button>
+              <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary ms-2 px-4 py-2">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

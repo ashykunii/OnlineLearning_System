@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{% url 'employee_dashboard' %}" class="text-muted small text-decoration-none">&larr; Dashboard</a>
+        <h2 class="mb-0 mt-1">{{ title }}</h2>
+    </div>
+    {% if model_name != 'review' %}
+    <a href="{% url 'employee_model_create' model_name %}" class="btn btn-success">
+        <strong>+</strong> Add New {{ model_name|capfirst }}
+    </a>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        {% if model_name == 'student' %}
+                            <th class="ps-4">Username</th>
+                            <th>Email</th>
+                            <th>Bio</th>
+                        {% elif model_name == 'instructor' %}
+                            <th class="ps-4">Username</th>
+                            <th>Email</th>
+                            <th>Specialty</th>
+                        {% elif model_name == 'course' %}
+                            <th class="ps-4">Title</th>
+                            <th>Instructor</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        {% elif model_name == 'category' %}
+                            <th class="ps-4">Name</th>
+                            <th>Description</th>
+                        {% elif model_name == 'tag' %}
+                            <th class="ps-4">Tag Name</th>
+                        {% elif model_name == 'enrollment' %}
+                            <th class="ps-4">Student</th>
+                            <th>Course</th>
+                            <th>Enrolled At</th>
+                            <th>Progress</th>
+                        {% elif model_name == 'review' %}
+                            <th class="ps-4">Course</th>
+                            <th>Student</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th>Status</th>
+                        {% else %}
+                            <th class="ps-4">Record</th>
+                        {% endif %}
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        {% if model_name == 'student' %}
+                            <td class="ps-4 fw-semibold">{{ item.user.username }}</td>
+                            <td class="text-muted">{{ item.user.email|default:"—" }}</td>
+                            <td class="text-muted small" style="max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                {{ item.bio|default:"No biography" }}
+                            </td>
+                        {% elif model_name == 'instructor' %}
+                            <td class="ps-4 fw-semibold">{{ item.user.username }}</td>
+                            <td class="text-muted">{{ item.user.email|default:"—" }}</td>
+                            <td><span class="badge" style="background:#d1e7dd;color:#0f5132;">{{ item.specialty|default:"General" }}</span></td>
+                        {% elif model_name == 'course' %}
+                            <td class="ps-4 fw-semibold">{{ item.title }}</td>
+                            <td class="text-muted">{{ item.instructor.user.username }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ item.category.name|default:"Uncategorized" }}</span></td>
+                            <td class="fw-semibold">${{ item.price }}</td>
+                            <td>
+                                {% if item.is_published %}
+                                    <span class="badge bg-success">Published</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Draft</span>
+                                {% endif %}
+                            </td>
+                        {% elif model_name == 'category' %}
+                            <td class="ps-4 fw-semibold">{{ item.name }}</td>
+                            <td class="text-muted small">{{ item.description|default:"No description"|truncatechars:80 }}</td>
+                        {% elif model_name == 'tag' %}
+                            <td class="ps-4">
+                                <span class="badge" style="background:#d1e7dd;color:#0f5132; font-size:0.9em;"># {{ item.name }}</span>
+                            </td>
+                        {% elif model_name == 'enrollment' %}
+                            <td class="ps-4 fw-semibold">{{ item.student.user.username }}</td>
+                            <td class="text-muted">{{ item.course.title }}</td>
+                            <td class="text-muted small">{{ item.enrolled_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% with total=item.course.lessons.count completed=item.completed_lessons.count %}
+                                    {% if total > 0 %}
+                                    <div class="progress" style="height:7px; width:90px;" title="{{ completed }}/{{ total }} lessons">
+                                        <div class="progress-bar bg-success" style="width: {% widthratio completed total 100 %}%"></div>
+                                    </div>
+                                    <div class="text-muted" style="font-size:0.78em;">{{ completed }}/{{ total }}</div>
+                                    {% else %}
+                                    <span class="text-muted small">No lessons</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        {% elif model_name == 'review' %}
+                            <td class="ps-4 fw-semibold" style="max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                {{ item.course.title }}
+                            </td>
+                            <td class="text-muted">{{ item.student.user.username }}</td>
+                            <td>
+                                <span style="color:#198754; font-weight:700;">{{ item.rating }}</span>
+                                <span class="text-muted small">/5</span>
+                            </td>
+                            <td class="text-muted small" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                "{{ item.comment }}"
+                            </td>
+                            <td>
+                                {% if item.is_approved %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Pending</span>
+                                {% endif %}
+                            </td>
+                        {% else %}
+                            <td class="ps-4">{{ item }}</td>
+                        {% endif %}
+
+                        <td class="text-end pe-4">
+                            {% if model_name == 'review' %}
+                            <a href="{% url 'employee_model_edit' model_name item.pk %}"
+                               class="btn btn-sm btn-outline-success">Moderate</a>
+                            {% else %}
+                            <a href="{% url 'employee_model_edit' model_name item.pk %}"
+                               class="btn btn-sm btn-outline-primary">Edit</a>
+                            {% endif %}
+                            <a href="{% url 'employee_model_delete_confirm' model_name item.pk %}"
+                               class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-5">
+                            <div style="font-size:2em;"></div>
+                            No records found. <a href="{% url 'employee_model_create' model_name %}">Add one now →</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

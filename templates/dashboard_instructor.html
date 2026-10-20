@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Instructor Profile Info Showcase Banner -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 profile-banner profile-banner--instructor">
+        <h3 class="mb-0 text-white">{{ user.get_full_name|default:user.username }}</h3>
+        <p class="mb-1 opacity-75">Instructor HQ &bull; Specialty: <strong>{{ user.instructor_profile.specialty|default:"General" }}</strong></p>
+        <p class="mb-0 small opacity-75">Email: {{ user.email }} &bull; Total Students Taught: <strong>{{ students_count }}</strong></p>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-6" id="curriculum">
+        <h4 class="mb-3">My Curriculum Frameworks <a href="{% url 'course_create' %}" class="btn btn-sm btn-success float-end">+ New Course</a></h4>
+        {% for course in courses %}
+        <div class="p-3 mb-3 bg-white border rounded shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0 text-success fw-bold">{{ course.title }}</h5>
+                <div>
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-xs btn-outline-secondary py-0 px-2 small">View</a>
+                    <a href="{% url 'course_update' course.id %}" class="btn btn-xs btn-outline-primary py-0 px-2 small">Edit</a>
+                    <a href="{% url 'lesson_create' course.id %}" class="btn btn-xs btn-success py-0 px-2 small">+ Add Lesson</a>
+                </div>
+            </div>
+            <p class="text-muted small mb-2">Status: {% if course.is_published %}<span class="badge bg-success bg-opacity-75 text-white py-1">Live</span>{% else %}<span class="badge bg-secondary bg-opacity-75 text-white py-1">Drafting</span>{% endif %}</p>
+            
+            {% if course.lessons.all %}
+                <div class="mt-2 ps-3 border-start border-2 border-success border-opacity-25">
+                    <h6 class="text-muted small fw-bold mb-1">Lessons & Assignments:</h6>
+                    <ul class="list-group list-group-flush small">
+                        {% for lesson in course.lessons.all %}
+                        <li class="list-group-item bg-transparent py-2 px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Step {{ lesson.order }}: <strong>{{ lesson.title }}</strong></span>
+                                <div class="d-flex gap-1">
+                                    <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-xs btn-outline-dark py-0 px-2 small">View</a>
+                                    <a href="{% url 'lesson_update' lesson.id %}" class="btn btn-xs btn-outline-primary py-0 px-2 small">Edit</a>
+                                    <a href="{% url 'assignment_create' lesson.id %}" class="btn btn-xs btn-primary py-0 px-2 small">+ Add Assignment</a>
+                                </div>
+                            </div>
+                            {% if lesson.assignments.all %}
+                                <div class="mt-1 ps-3 text-muted small">
+                                    {% for assignment in lesson.assignments.all %}
+                                        <div class="d-flex justify-content-between align-items-center mt-1 py-1 border-bottom border-light">
+                                            <span> {{ assignment.title }}</span>
+                                            <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-xs btn-link text-decoration-none py-0 small">Submissions</a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p class="text-muted small fst-italic ps-3 mb-0">No lessons created yet.</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-6">
+        <h4 class="mb-3">Pending Grading Requests
+          <span class="badge bg-warning text-dark fs-6 ms-2">{{ pending_submissions|length }}</span>
+        </h4>
+        {% for sub in pending_submissions %}
+        <div class="p-3 mb-2 bg-white border rounded shadow-sm border-start border-warning border-3">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <div>
+                <h6 class="mb-0">{{ sub.assignment.title }}</h6>
+                <small class="text-muted">Student: <strong>{{ sub.student.user.username }}</strong> &mdash; Max: {{ sub.assignment.max_score }} pts</small>
+              </div>
+              <a href="{% url 'assignment_detail' sub.assignment.id %}" class="btn btn-sm btn-outline-secondary ms-2">Full View</a>
+            </div>
+            {% if sub.text_content %}
+            <p class="mb-2 small text-muted fst-italic">{{ sub.text_content|truncatewords:15 }}</p>
+            {% endif %}
+            <form action="{% url 'grade_submission' sub.id %}" method="post" class="row g-2 mt-1">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'instructor_dashboard' %}">
+                <div class="col-sm-4">
+                  <input type="number" name="score" placeholder="Score" class="form-control form-control-sm"
+                    min="0" max="{{ sub.assignment.max_score }}" required>
+                </div>
+                <div class="col-sm-5">
+                  <input type="text" name="feedback" placeholder="Feedback..." class="form-control form-control-sm">
+                </div>
+                <div class="col-sm-3">
+                  <button type="submit" class="btn btn-sm btn-dark w-100">Grade</button>
+                </div>
+            </form>
+        </div>
+        {% empty %}
+        <p class="text-muted">All clear! No assignments currently require verification.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

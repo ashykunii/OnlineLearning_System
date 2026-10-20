@@ -1,0 +1,15 @@
+<div class="sidebar-container sidebar-container--anon d-flex flex-column p-3 text-white">
+    <a href="{% url 'course_list' %}" class="d-flex align-items-center mb-4 text-white text-decoration-none">
+        <span class="fs-5 fw-bold tracking-tight">ITA Insitute Portal</span>
+    </a>
+    <hr class="border-white border-opacity-25 mt-0">
+    <ul class="nav nav-pills flex-column mb-auto gap-1">
+        <li>
+            <a href="{% url 'course_list' %}" class="nav-link text-white active bg-success d-flex gap-2">
+                <span>Course Catalog</span>
+            </a>
+        </li>
+    </ul>
+    <hr class="border-white border-opacity-25 mt-auto">
+    <a href="{% url 'login' %}" class="btn btn-outline-light w-100 py-2">Login</a>
+</div>

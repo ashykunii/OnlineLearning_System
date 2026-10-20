@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+
+  <div class="col-12">
+    <h2 class="fw-bold mb-1">Settings</h2>
+    <p class="text-muted mb-4">Manage your account preferences and security.</p>
+  </div>
+
+  <!-- Account Info -->
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm card-lg">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">Security & Account</h5>
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+            <div>
+              <div class="fw-semibold">Username</div>
+              <div class="text-muted">{{ user.username }}</div>
+            </div>
+            <span class="badge bg-light text-muted border">Read-only</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+            <div>
+              <div class="fw-semibold">Email Address</div>
+              <div class="text-muted">{{ user.email|default:"Not set" }}</div>
+            </div>
+            <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-success">Edit</a>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+            <div>
+              <div class="fw-semibold">Role</div>
+              <div class="text-muted">{{ user.role|capfirst }}</div>
+            </div>
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Active</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+            <div>
+              <div class="fw-semibold">Account Created</div>
+              <div class="text-muted">{{ user.date_joined|date:"F d, Y" }}</div>
+            </div>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+            <div>
+              <div class="fw-semibold">Last Login</div>
+              <div class="text-muted">{{ user.last_login|date:"F d, Y H:i"|default:"Never" }}</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferences -->
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm mb-4 card-lg">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-4">Preferences</h5>
+
+        <!-- Dark Mode Toggle -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+          <div>
+            <div class="fw-semibold mode-label-text text-dark">Dark Mode</div>
+            <div class="text-muted settings-pref-label">Toggle dark / light interface theme</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input settings-switch" type="checkbox" role="switch" id="darkModeToggle">
+          </div>
+        </div>
+
+        <!-- Notification Toggles (UI only) -->
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+          <div>
+            <div class="fw-semibold text-dark">Email Notifications</div>
+            <div class="text-muted settings-pref-label">Receive grade & deadline alerts</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input settings-switch" type="checkbox" role="switch" id="emailNotifSwitch" checked>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold text-dark">Submission Reminders</div>
+            <div class="text-muted settings-pref-label">Due date reminder push alerts</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input settings-switch" type="checkbox" role="switch" id="reminderSwitch" checked>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card shadow-sm card-lg danger-card">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-3 text-danger">Danger Zone</h5>
+        <p class="text-muted small mb-3">These actions are irreversible. Proceed with caution.</p>
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger w-100 mb-2">Sign Out of Account</button>
+        </form>
+        <button class="btn btn-light w-100 text-muted" disabled>Delete Account (disabled)</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+    const toggle = document.getElementById('darkModeToggle');
+    const currentTheme = localStorage.getItem('theme');
+
+    // Sync toggle state with current theme
+    toggle.checked = (currentTheme === 'dark');
+
+    toggle.addEventListener('change', function () {
+        window.applyTheme(this.checked);
+
+        // Visual feedback
+        const label = this.parentElement.previousElementSibling.querySelector('.mode-label-text');
+        label.textContent = this.checked ? 'Light Mode' : 'Dark Mode';
+    });
+
+    // Init label text
+    const label = toggle.parentElement.previousElementSibling.querySelector('.mode-label-text');
+    label.textContent = toggle.checked ? 'Light Mode' : 'Dark Mode';
+})();
+</script>
+{% endblock %}

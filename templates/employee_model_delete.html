@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+
+        
+        <!-- Breadcrumb -->
+        <div class="text-muted small mb-3">
+            <a href="{% url 'employee_dashboard' %}" class="text-muted text-decoration-none">Dashboard</a>
+            &rsaquo;
+            <a href="{% url 'employee_model_list' model_name %}" class="text-muted text-decoration-none">{{ model_name|capfirst }}s</a>
+            &rsaquo; Delete
+        </div>
+
+        <div class="card shadow-sm border-danger">
+            <div class="card-header py-3" style="background:#dc3545; border:none;">
+                <h4 class="mb-0 text-white fw-bold">⚠ Confirm Deletion</h4>
+            </div>
+            <div class="card-body p-4 text-center">
+                <p class="text-muted mb-1">You are about to permanently delete:</p>
+                <h5 class="fw-bold mb-1" style="color:#0f5132;">{{ object }}</h5>
+                <p class="text-muted small mb-0">( {{ model_name|capfirst }} #{{ object.pk }} )</p>
+                
+                {% if model_name == 'student' or model_name == 'instructor' %}
+                <div class="alert alert-warning mt-3 text-start small">
+                    <strong>Warning:</strong> This will also permanently delete the associated user account 
+                    <strong>{{ object.user.username }}</strong>. This action cannot be undone.
+                </div>
+                {% else %}
+                <p class="text-muted small mt-3">This action cannot be undone.</p>
+                {% endif %}
+
+                <div class="d-flex gap-2 mt-4">
+                    <form action="{% url 'employee_model_delete' model_name object.pk %}" method="post" class="flex-grow-1">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100 fw-semibold">Yes, Delete Permanently</button>
+                    </form>
+                    <a href="{% url 'employee_model_list' model_name %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

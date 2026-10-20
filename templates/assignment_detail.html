@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load video_filters %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'course_detail' lesson.course.id %}">{{ lesson.course.title }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lesson_detail' lesson.id %}">{{ lesson.title }}</a></li>
+        <li class="breadcrumb-item active">{{ assignment.title }}</li>
+      </ol>
+    </nav>
+
+    <!-- Assignment Header Card -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0 text-white">{{ assignment.title }}</h4>
+        {% if user.role == 'instructor' %}
+        <span class="badge bg-warning text-dark fs-6">{{ pending_count }} Pending</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <p class="lead text-muted">{{ assignment.description }}</p>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-danger fw-bold">Due:</span>
+              <span class="text-muted">{{ assignment.due_date|date:"N j, Y — g:i A" }}</span>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="d-flex align-items-center gap-2">
+              <span class="text-primary fw-bold">Max Score:</span>
+              <span class="badge bg-primary fs-6">{{ assignment.max_score }} pts</span>
+            </div>
+          </div>
+        </div>
+        
+        {% if assignment.instructor_file %}
+        <hr class="my-3">
+        <div class="alert alert-info mb-0">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/>
+            </svg>
+            <strong>Instructor Materials Available</strong>
+          </div>
+          <p class="mb-2 small">The instructor has provided reference materials for this assignment.</p>
+          <a href="{{ assignment.instructor_file.url }}" target="_blank" download class="btn btn-sm btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            Download Instructor File
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ====== STUDENT VIEW ====== -->
+    {% if user.role == 'student' %}
+      {% if user_submission %}
+        <!-- Already Submitted -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header {% if user_submission.score is not None %}bg-success text-white{% else %}bg-warning text-dark{% endif %}">
+            <h5 class="mb-0">
+              {% if user_submission.score is not None %}
+                Graded — {{ user_submission.score }} / {{ assignment.max_score }}
+              {% else %}
+                Submitted — Awaiting Grading
+              {% endif %}
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted small mb-1">Submitted: {{ user_submission.submitted_at|date:"N j, Y g:i A" }}</p>
+            {% if user_submission.text_content %}
+            <h6 class="fw-semibold mt-2">Your Answer / Code:</h6>
+            <pre class="p-3 rounded">{{ user_submission.text_content }}</pre>
+            {% endif %}
+            {% if user_submission.file_attachment %}
+            <div class="mt-3">
+              <h6 class="fw-semibold">Submitted File:</h6>
+              {% if user_submission.file_attachment.url|is_pdf %}
+                <div class="pdf-viewer-wrapper mb-2">
+                  <embed src="{{ user_submission.file_attachment.url }}" type="application/pdf"
+                         width="100%" height="500px">
+                </div>
+              {% else %}
+                <div class="file-preview-box">
+                  <div class="file-preview-icon">
+                    {% with ext=user_submission.file_attachment.url|file_extension %}
+                      {% if ext == 'png' or ext == 'jpg' or ext == 'jpeg' or ext == 'gif' %}Image
+                      {% elif ext == 'zip' or ext == 'rar' %}Archive
+                      {% elif ext == 'py' or ext == 'js' or ext == 'html' %}Code
+                      {% else %}File{% endif %}
+                    {% endwith %}
+                  </div>
+                  <p class="mb-1 fw-semibold small">{{ user_submission.file_attachment.name }}</p>
+                </div>
+              {% endif %}
+              <a href="{{ user_submission.file_attachment.url }}" target="_blank" download
+                 class="btn btn-sm btn-outline-secondary mt-2">Download Submitted File</a>
+            </div>
+            {% endif %}
+
+            {% if user_submission.score is not None %}
+            <hr>
+            <h6>Instructor Feedback:</h6>
+            <div class="alert alert-info mb-0">
+              {% if user_submission.feedback %}
+                {{ user_submission.feedback }}
+              {% else %}
+                <em class="text-muted">No feedback provided.</em>
+              {% endif %}
+            </div>
+            <p class="text-muted small mt-2 mb-0">Graded: {{ user_submission.graded_at|date:"N j, Y g:i A" }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Re-submission collapsible form -->
+        <div class="text-center my-4">
+          <button class="btn btn-outline-primary px-4 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#resubmitForm" aria-expanded="false" aria-controls="resubmitForm">
+            Resubmit Your Work
+          </button>
+        </div>
+
+        <div class="collapse" id="resubmitForm">
+          <div class="card border-primary shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Resubmit Your Work</h5>
+            </div>
+            <div class="card-body">
+              <form action="{% url 'submit_assignment' assignment.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Answer / Code (Text)</label>
+                  <textarea name="text_content" class="form-control font-monospace" rows="8"
+                    placeholder="Paste your code or write your answer here...">{{ user_submission.text_content }}</textarea>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">New File Attachment <span class="text-muted fw-normal">(optional, will replace current file)</span></label>
+                  <input type="file" name="file_attachment" class="form-control">
+                  <div class="form-text">Accepted: any file type.</div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary px-4">Submit Assignment</button>
+                  <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#resubmitForm">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      {% else %}
+        <!-- Submission Form -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0 text-white">Submit Your Work</h5>
+          </div>
+          <div class="card-body">
+            <form action="{% url 'submit_assignment' assignment.id %}" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Answer / Code (Text)</label>
+                <textarea name="text_content" class="form-control font-monospace" rows="8"
+                  placeholder="Paste your code or write your answer here..."></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">File Attachment <span class="text-muted fw-normal">(optional)</span></label>
+                <input type="file" name="file_attachment" class="form-control">
+                <div class="form-text">Accepted: any file type. Max size determined by server config.</div>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">Submit Assignment</button>
+                <a href="{% url 'lesson_detail' lesson.id %}" class="btn btn-outline-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+
+    <!-- ====== INSTRUCTOR VIEW ====== -->
+    {% elif user.role == 'instructor' %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Student Submissions <span class="badge bg-secondary">{{ all_submissions|length }} total</span></h5>
+      <div>
+        <span class="badge bg-success me-1">{{ graded_count }} Graded</span>
+        <span class="badge bg-warning text-dark">{{ pending_count }} Pending</span>
+      </div>
+    </div>
+
+    <!-- Search Submissions Bar -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-3">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+              viewBox="0 0 16 16">
+              <path
+                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+            </svg>
+          </span>
+          <input type="text" id="submissionSearchInput" class="form-control border-start-0 ps-0" placeholder="Search submissions by student name or username...">
+        </div>
+      </div>
+    </div>
+
+    {% for sub in all_submissions %}
+    <div class="card border-0 shadow-sm mb-3 submission-card" data-student-name="{{ sub.student.user.get_full_name }}" data-student-username="{{ sub.student.user.username }}">
+      <div class="card-header d-flex justify-content-between align-items-center
+        {% if sub.score is not None %}bg-success bg-opacity-10 border-start border-success border-3
+        {% else %}bg-warning bg-opacity-10 border-start border-warning border-3{% endif %}">
+        <div>
+          <strong>{{ sub.student.user.get_full_name|default:sub.student.user.username }}</strong>
+          <span class="text-muted small ms-2">@{{ sub.student.user.username }}</span>
+        </div>
+        {% if sub.score is not None %}
+          <span class="badge bg-success fs-6">{{ sub.score }} / {{ assignment.max_score }}</span>
+        {% else %}
+          <span class="badge bg-warning text-dark">Pending Review</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <p class="text-muted small mb-2">Submitted: {{ sub.submitted_at|date:"N j, Y g:i A" }}</p>
+
+        {% if sub.text_content %}
+        <pre class="p-3 rounded">{{ sub.text_content }}</pre>
+        {% endif %}
+        {% if sub.file_attachment %}
+        <a href="{{ sub.file_attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary mb-3">
+           View Submitted File
+        </a>
+        {% endif %}
+
+        <!-- Inline Grading Form -->
+        <form action="{% url 'grade_submission' sub.id %}" method="post" class="row g-2 align-items-end border-top pt-3 mt-2">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <div class="col-md-3">
+            <label class="form-label form-label-sm mb-1">Score (max {{ assignment.max_score }})</label>
+            <input type="number" name="score" class="form-control form-control-sm"
+              min="0" max="{{ assignment.max_score }}" value="{{ sub.score|default:'' }}" required
+              placeholder="e.g. 85">
+          </div>
+          <div class="col-md-7">
+            <label class="form-label form-label-sm mb-1">Feedback</label>
+            <input type="text" name="feedback" class="form-control form-control-sm"
+              value="{{ sub.feedback|default:'' }}" placeholder="Write constructive feedback...">
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-dark btn-sm w-100">
+              {% if sub.score is not None %}Update{% else %}Grade{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% empty %}
+    <div class="text-center text-muted py-5">
+      <p class="fs-5">No submissions yet for this assignment.</p>
+    </div>
+    {% endfor %}
+
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('submissionSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.submission-card');
+            cards.forEach(card => {
+                const name = (card.getAttribute('data-student-name') || '').toLowerCase();
+                const username = (card.getAttribute('data-student-username') || '').toLowerCase();
+                if (name.includes(query) || username.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
